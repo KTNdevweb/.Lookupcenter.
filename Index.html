@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lookup Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #050505;
+      color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 900px;
+      background: #0d0d0d;
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      border: 1px solid #2a2a2a;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    /* === LOGO TEXTE DANS LE HEADER === */
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      font-weight: 600;
+      font-size: 20px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .logo span {
+      color: #ffffff;
+    }
+
+    /* === LOGO FLOTTANT EN HAUT À GAUCHE === */
+    .floating-logo {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 110px;
+      height: auto;
+      z-index: 9999;
+      opacity: 0.95;
+      cursor: default;
+      user-select: none;
+      filter: drop-shadow(0 0 12px rgba(255,255,255,0.12));
+      transition: 0.25s ease;
+    }
+    .floating-logo:hover {
+      filter: drop-shadow(0 0 18px rgba(255,255,255,0.25));
+      opacity: 1;
+    }
+
+    /* === BADGE ALPHA AVEC POINT VERT === */
+    .badge {
+      position: relative;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 14px 4px 26px;
+      border-radius: 999px;
+      border: 1px solid #3a3a3a;
+      color: #bfbfbf;
+    }
+    .badge::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,0.35);
+    }
+
+    /* === MENU TABS AVEC POINT BLEU === */
+    .menu {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid #242424;
+      padding-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .menu button {
+      position: relative;
+      padding: 8px 14px 8px 26px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #a3a3a3;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .menu button::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #1f2933;
+      box-shadow: none;
+      transition: 0.2s;
+    }
+
+    .menu button.active {
+      border-color: #4b5563;
+      background: #141414;
+      color: #ffffff;
+    }
+
+    .menu button.active::before {
+      background: #1d9bf0;
+      box-shadow: 0 0 0 4px rgba(29,155,240,0.35);
+    }
+
+    .menu button:not(.active):hover {
+      background: #141414;
+      color: #f5f5f5;
+    }
+
+    .card {
+      background: #111111;
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      border: 1px solid #262626;
+      margin-bottom: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: #9f9f9f;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .input-row input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid #333333;
+      background: #050505;
+      color: #f5f5f5;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .input-row input::placeholder {
+      color: #555555;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid #ffffff;
+      background: #ffffff;
+      color: #000000;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      filter: brightness(0.9);
+    }
+
+    .btn-ghost {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #333333;
+      background: #121212;
+      color: #f5f5f5;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-ghost:hover {
+      border-color: #ffffff;
+    }
+
+    .muted {
+      font-size: 12px;
+      color: #808080;
+      margin-top: 6px;
+    }
+
+    .status {
+      font-size: 12px;
+      margin-top: 8px;
+      color: #b3b3b3;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .result-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #080808;
+      border: 1px solid #262626;
+    }
+
+    .result-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8a8a8a;
+      margin-bottom: 4px;
+    }
+
+    .result-value {
+      font-size: 14px;
+      color: #f5f5f5;
+      word-break: break-word;
+    }
+
+    /* MAP */
+    .map-footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .map-link {
+      font-size: 12px;
+      color: #9bb4ff;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .map-frame {
+      margin-top: 10px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #262626;
+    }
+
+    .map-frame iframe {
+      width: 100%;
+      height: 230px;
+      border: 0;
+      display: block;
+    }
+
+    /* DISCORD SERVERS */
+    .servers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .server-card {
+      background: #111111;
+      border-radius: 14px;
+      padding: 16px 16px 14px;
+      border: 1px solid #262626;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .server-top {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .server-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 1px solid #2a2a2a;
+    }
+
+    .server-name {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .server-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9a9a9a;
+    }
+
+    .server-actions {
+      margin-top: 4px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+
+    .server-link button {
+      all: unset;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #ffffff;
+      background: #ffffff;
+      color: #000000;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .server-link button:hover {
+      filter: brightness(0.9);
+    }
+
+    .server-id {
+      font-size: 11px;
+      color: #7a7a7a;
+    }
+
+    /* ===== BOUTON INFOS ===== */
+    .info-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      padding: 10px 18px;
+      background: #ffffff;
+      color: #000;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 9999;
+      transition: 0.2s;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .info-btn:hover {
+      filter: brightness(0.9);
+    }
+
+    .info-popup {
+      position: fixed;
+      bottom: 80px;
+      right: 25px;
+      width: 260px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 15px;
+      z-index: 9999;
+      display: none;
+      animation: fadeIn 0.25s ease;
+      box-shadow: 0 0 18px rgba(0,0,0,0.4);
+    }
+
+    .info-popup h3 {
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .info-popup p {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #ccc;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        padding: 18px 16px;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .input-row {
+        flex-direction: column;
+      }
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+      .map-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGO FLOTTANT GLOBAL -->
+  <img
+    src="https://media.discordapp.net/attachments/1441491846839926946/1441953923681488919/ChatGPT_Image_23_nov._2025__01_41_09-removebg-preview.png?ex=6923abbd&is=69225a3d&hm=ed401637b97bb7661e750c4f285a152314b7a4318dc39d55e56d191a967114cf&=&format=webp&quality=lossless&width=550&height=550"
+    alt="Logo LookupCenter"
+    class="floating-logo"
+  >
+
+  <div class="app">
+    <header class="app-header">
+      <div class="logo-wrapper">
+        <div class="logo">LOOKUP<span>CENTER</span></div>
+      </div>
+      <div class="badge">ALPHA</div>
+    </header>
+
+    <div class="menu">
+      <button class="active" onclick="showSection('ip-lookup-section', this)">IP Lookup</button>
+      <button onclick="showSection('discord-servers-section', this)">Discord</button>
+    </div>
+
+    <!-- IP LOOKUP -->
+    <div id="ip-lookup-section">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Analyse d'Adresse IP</div>
+            <div class="card-subtitle">Géolocalisation, réseau, FAI, sécurité, etc.</div>
+          </div>
+        </div>
+        <div class="input-row">
+          <input id="ip-input" type="text" placeholder="8.8.8.8 ou laisse vide pour ton IP" />
+          <button class="btn" id="ip-btn">Analyser</button>
+        </div>
+        <div class="muted">
+          ⚠️ Données publiques uniquement : localisation approximative, FAI, réseau, détection VPN/proxy/hébergement.  
+          Pas de nom/prénom/mot de passe, ces infos ne sont pas accessibles.
+        </div>
+        <div class="status" id="ip-status"></div>
+      </div>
+
+      <div class="card" id="ip-results-card" style="display:none;">
+        <div class="card-header">
+          <div class="card-title">Résultats de l'analyse</div>
+        </div>
+        <div class="results-grid" id="ip-results-grid"></div>
+
+        <!-- CARTE GOOGLE MAPS -->
+        <div id="ip-map-section" style="display:none; margin-top: 10px;">
+          <div class="map-footer">
+            <button id="ip-map-toggle" class="btn-ghost">Afficher la carte</button>
+            <a id="ip-map-full" class="map-link" href="#" target="_blank" rel="noopener">
+              Voir sur Google Maps
+            </a>
+          </div>
+          <div id="ip-map-embed" class="map-frame" style="display:none;">
+            <iframe id="ip-map-iframe" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISCORD -->
+    <div id="discord-servers-section" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Serveurs Discord</div>
+            <div class="card-subtitle">Accès rapide à tes serveurs</div>
+          </div>
+        </div>
+        <div class="servers">
+          <div class="server-card">
+            <div class="server-top">
+              <img class="server-img" src="https://cdn.discordapp.com/attachments/1373250700062097408/1441946033759326228/image.png?ex=6923a464&is=692252e4&hm=a725f9e63567634acbd463a966565a5ab510aa81c3a362be3825e8e6d2439cc4&" alt="LookupALL" />
+              <div>
+                <div class="server-name">LookupALL</div>
+                <div class="server-tag">Discord Hub</div>
+              </div>
+            </div>
+            <div class="server-actions">
+              <a class="server-link" href="https://discord.gg/URFk6s5Yt2" target="_blank" rel="noopener">
+                <button>Rejoindre</button>
+              </a>
+            </div>
+            <div class="server-id">Invitation : URFk6s5Yt2</div>
+          </div>
+
+          <div class="server-card">
+            <div class="server-top">
+              <img class="server-img" src="https://media.discordapp.net/attachments/1373250700062097408/1441946033473978562/image.png?ex=6923a464&is=692252e4&hm=01271227f1b0ccb5cbdde7dbca1953942dc622a566e403048081f44705624789&=&format=webp&quality=lossless&width=618&height=384" alt="Exchange" />
+              <div>
+                <div class="server-name">Exchange Server</div>
+                <div class="server-tag">Échanges</div>
+              </div>
+            </div>
+            <div class="server-actions">
+              <a class="server-link" href="https://discord.gg/68sG5sBUfU" target="_blank" rel="noopener">
+                <button>Rejoindre</button>
+              </a>
+            </div>
+            <div class="server-id">Invitation : 68sG5sBUfU</div>
+          </div>
+
+          <div class="server-card">
+            <div class="server-top">
+              <img class="server-img" src="https://cdn.discordapp.com/attachments/1373250700062097408/1441946033130311840/aaaaa.png?ex=6923a464&is=692252e4&hm=99922b6017c1efff86fc36fdc5e41029ab4b87bdb2a3322e3d01de821194850f&" alt="Shop Discord" />
+              <div>
+                <div class="server-name">Shop Discord</div>
+                <div class="server-tag">Shop</div>
+              </div>
+            </div>
+            <div class="server-actions">
+              <a class="server-link" href="https://discord.gg/P48xqkPtXd" target="_blank" rel="noopener">
+                <button>Rejoindre</button>
+              </a>
+            </div>
+            <div class="server-id">Invitation : P48xqkPtXd</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOUTON INFOS + POPUP -->
+  <button class="info-btn" id="info-btn">Infos</button>
+  <div class="info-popup" id="info-popup">
+    <h3>🔧 Développé par Ktn</h3>
+    <p>Ce site, incluant l’API d’analyse IP et toutes ses fonctionnalités, a été entièrement développé par <strong>Ktn</strong>.</p>
+    <p>Pour toute demande, suggestion ou collaboration :</p>
+    <p>📩 Contact Discord : <strong>@9kzr</strong></p>
+  </div>
+
+  <script>
+    // ====== UTIL ======
+    function addField(containerId, label, value) {
+      if (value === undefined || value === null || value === "") return;
+      const container = document.getElementById(containerId);
+      const item = document.createElement("div");
+      item.className = "result-item";
+      item.innerHTML =
+        '<div class="result-label">' + label +
+        '</div><div class="result-value">' + value + "</div>";
+      container.appendChild(item);
+    }
+
+    function showSection(sectionId, btn) {
+      const sections = ["ip-lookup-section", "discord-servers-section"];
+      sections.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = id === sectionId ? "block" : "none";
+      });
+
+      const buttons = document.querySelectorAll(".menu button");
+      buttons.forEach((b) => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+    }
+
+    // ====== IP LOOKUP avec ipwho.is ======
+    const ipInput = document.getElementById("ip-input");
+    const ipBtn = document.getElementById("ip-btn");
+    const ipStatus = document.getElementById("ip-status");
+    const ipResultsCard = document.getElementById("ip-results-card");
+    const ipResultsGrid = document.getElementById("ip-results-grid");
+
+    const ipMapSection = document.getElementById("ip-map-section");
+    const ipMapToggle  = document.getElementById("ip-map-toggle");
+    const ipMapEmbed   = document.getElementById("ip-map-embed");
+    const ipMapIframe  = document.getElementById("ip-map-iframe");
+    const ipMapFull    = document.getElementById("ip-map-full");
+
+    async function lookupIp() {
+      const ipRaw = ipInput.value.trim();
+      ipResultsCard.style.display = "none";
+      ipResultsGrid.innerHTML = "";
+      if (ipMapSection) ipMapSection.style.display = "none";
+      if (ipMapEmbed)   ipMapEmbed.style.display   = "none";
+      ipStatus.textContent = ipRaw
+        ? `Recherche en cours pour ${ipRaw}...`
+        : "Recherche en cours pour ton IP publique...";
+
+      try {
+        const url = ipRaw
+          ? `https://ipwho.is/${encodeURIComponent(ipRaw)}`
+          : "https://ipwho.is/";
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Erreur réseau ou API inaccessible.");
+        const data = await res.json();
+        if (data.success === false) {
+          throw new Error(data.message || "L'API a retourné une erreur.");
+        }
+
+        // --- Infos principales ---
+        addField("ip-results-grid", "Adresse IP", data.ip);
+        addField("ip-results-grid", "Type", data.type);
+
+        if (data.country || data.country_code) {
+          const countryLabel = data.country && data.country_code
+            ? `${data.country} (${data.country_code})`
+            : (data.country || data.country_code);
+          addField("ip-results-grid", "Pays", countryLabel);
+        }
+
+        addField("ip-results-grid", "Continent", data.continent);
+        addField("ip-results-grid", "Code continent", data.continent_code);
+        addField("ip-results-grid", "Capitale du pays", data.capital);
+        addField("ip-results-grid", "Région / État", data.region);
+        addField("ip-results-grid", "Code région", data.region_code);
+        addField("ip-results-grid", "Ville", data.city);
+        addField("ip-results-grid", "Code Postal", data.postal);
+        addField("ip-results-grid", "Latitude", data.latitude);
+        addField("ip-results-grid", "Longitude", data.longitude);
+        addField("ip-results-grid", "Dans l'UE", data.is_eu ? "Oui" : "Non");
+
+        addField("ip-results-grid", "Indicatif téléphonique pays", data.calling_code);
+        addField("ip-results-grid", "TLD du pays", data.tld);
+
+        // Fuseau horaire
+        if (data.timezone) {
+          addField("ip-results-grid", "Fuseau horaire", data.timezone.id || data.timezone);
+          addField("ip-results-grid", "Abréviation TZ", data.timezone.abbr);
+          addField("ip-results-grid", "Décalage (secondes)", data.timezone.offset);
+          addField("ip-results-grid", "Décalage UTC", data.timezone.utc);
+          addField("ip-results-grid", "Heure locale", data.timezone.current_time);
+        }
+
+        // Devise
+        if (data.currency) {
+          const dev = data.currency;
+          const labelDev = dev.name && dev.code
+            ? `${dev.name} (${dev.code})`
+            : (dev.code || dev.name);
+          addField("ip-results-grid", "Devise", labelDev);
+          addField("ip-results-grid", "Symbole", dev.symbol);
+        }
+
+        // Réseau / FAI
+        if (data.connection) {
+          addField("ip-results-grid", "ASN", data.connection.asn);
+          addField("ip-results-grid", "Organisation (org)", data.connection.org);
+          addField("ip-results-grid", "FAI / ISP", data.connection.isp);
+          addField("ip-results-grid", "Domaine", data.connection.domain);
+          addField("ip-results-grid", "Route (CIDR)", data.connection.route);
+        }
+
+        // Sécurité
+        if (data.security) {
+          addField("ip-results-grid", "VPN détecté", data.security.vpn ? "Oui" : "Non");
+          addField("ip-results-grid", "Proxy détecté", data.security.proxy ? "Oui" : "Non");
+          addField("ip-results-grid", "Noeud TOR", data.security.tor ? "Oui" : "Non");
+          addField("ip-results-grid", "IP anonyme", data.security.anonymous ? "Oui" : "Non");
+          addField("ip-results-grid", "Hébergement / Datacenter", data.security.hosting ? "Oui" : "Non");
+        }
+
+        ipResultsCard.style.display = "block";
+        ipStatus.textContent =
+          "Analyse terminée. Données publiques récupérées via ipwho.is.";
+
+        // Carte
+        if (data.latitude && data.longitude && ipMapSection && ipMapIframe && ipMapFull) {
+          const lat = data.latitude;
+          const lon = data.longitude;
+
+          const embedUrl = `https://www.google.com/maps?q=${lat},${lon}&z=13&output=embed`;
+          const fullUrl  = `https://www.google.com/maps?q=${lat},${lon}&z=16`;
+
+          ipMapIframe.src = embedUrl;
+          ipMapFull.href  = fullUrl;
+
+          ipMapSection.style.display = "block";
+          if (ipMapEmbed) ipMapEmbed.style.display = "none";
+          if (ipMapToggle) ipMapToggle.textContent = "Afficher la carte";
+        } else if (ipMapSection) {
+          ipMapSection.style.display = "none";
+        }
+
+      } catch (err) {
+        console.error(err);
+        ipStatus.textContent =
+          "Impossible de récupérer les infos pour cette IP. Message : " + err.message;
+        ipResultsCard.style.display = "none";
+        if (ipMapSection) ipMapSection.style.display = "none";
+      }
+    }
+
+    if (ipBtn) {
+      ipBtn.addEventListener("click", lookupIp);
+    }
+
+    if (ipInput) {
+      ipInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") lookupIp();
+      });
+    }
+
+    if (ipMapToggle && ipMapEmbed) {
+      ipMapToggle.addEventListener("click", () => {
+        const isShown = ipMapEmbed.style.display === "block";
+        ipMapEmbed.style.display = isShown ? "none" : "block";
+        ipMapToggle.textContent = isShown ? "Afficher la carte" : "Masquer la carte";
+      });
+    }
+
+    // === POPUP INFOS ===
+    const infoBtn = document.getElementById("info-btn");
+    const infoPopup = document.getElementById("info-popup");
+
+    infoBtn.addEventListener("mouseenter", () => {
+      infoPopup.style.display = "block";
+    });
+    infoBtn.addEventListener("mouseleave", () => {
+      infoPopup.style.display = "none";
+    });
+    infoPopup.addEventListener("mouseleave", () => {
+      infoPopup.style.display = "none";
+    });
+
+    infoBtn.addEventListener("click", () => {
+      if (infoPopup.style.display === "block") {
+        infoPopup.style.display = "none";
+      } else {
+        infoPopup.style.display = "block";
+      }
+    });
+
+    // IP Lookup affiché par défaut
+    showSection("ip-lookup-section");
+  </script>
+</body>
+</html>
+D
